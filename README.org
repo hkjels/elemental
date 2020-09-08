@@ -1,0 +1,66 @@
+* Elemental
+
+Elemental; changes a bunch of the default configurations of Emacs to
+be more intuitive and also handles some typical performance issues.
+
+If you decide to give Elemental a try and find one or more behaviors
+unintuitive, please let me know by filing an [[./issues][issue]].
+
+** Additional Suggestions
+
+While Elemental goes a long way, it's still a package that you'll have
+to bring in to your environment and there are actually things you can
+do to improve the experience of Emacs, even before package-management
+is available to you.
+
+I recommend that you create a file that sets up the chrome you would
+like and put it at ~~/.emacs.d/early-init.el~. Doing so, you'll get rid
+of some initial flickering and will shed some hundred milliseconds off
+the startup time.
+
+My early-init file looks like this:
+#+begin_src emacs-lisp
+;; -*- no-byte-compile: t; -*-
+;; -*- lexical-binding: t; -*-
+
+(setq-default gc-cons-threshold most-positive-fixnum)
+(setq-default package-enable-at-startup nil)
+(advice-add #'package--ensure-init-file :override #'ignore)
+
+(setq-default frame-inhibit-implied-resize t)
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+
+(setq-default debug-on-error (getenv "DEBUG")
+              init-file-debug (getenv "DEBUG"))
+#+end_src
+
+Another recommendation of mine is to use [[https://github.com/raxod502/straight.el][straight.el]]. You get all the
+declarative goodness of [[https://github.com/jwiegley/use-package][use-package]] and in addition, it will be easier
+to contribute to packages or manage your own.
+
+With straight.. or use-package for that matter, all you need is this
+line in your emacs configuration-file.
+#+begin_src emacs-lisp
+(use-package elemental)
+#+end_src
+/Note that one of the above is required as Emacs does not ship with a package-manager./
+
+Last recommendation is to run an Emacs-server and connect to it with
+Emacs-client. When using a demonized Emacs you can open files with
+immediate response since you don't have to load your configuration over
+and over.
+
+All you do is invoke emacsclient as below, which basically means; try
+starting emacs-client, if there's no server running, start a new
+server and connect to it.
+#+begin_src shell
+emacsclient -c -a "" "$@" &
+#+end_src
+
+Now, for all sequential invocations of that line, a frame will be
+created instantly. Neat!
+
+** License
+#+name: license
