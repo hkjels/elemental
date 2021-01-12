@@ -86,6 +86,15 @@ down the line.
 	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)) )
 #+end_src
 
+*** Better reading experience
+
+With this setting, view-mode is enabled for all read-only buffers.
+View-mode will give you paging with space and back-space, generally
+more suited for read-only files then the usual scroll behavior.
+#+begin_src emacs-lisp :tangle yes :comments org :noweb yes
+(setq view-read-only t)
+#+end_src
+
 Note: If you want, you can have Emacs delete stale backup's
 automatically by setting ~delete-old-versions~ to ~t~ and modifying
 ~kept-new-versions~ and ~kept-old-versions~ as you see fit.
