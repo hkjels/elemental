@@ -73,6 +73,14 @@
 	      backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
 	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)) )
 
+;; Better reading experience
+
+;; With this setting, view-mode is enabled for all read-only buffers.
+;; View-mode will give you paging with space and back-space, generally
+;; more suited for read-only files then the usual scroll behavior.
+
+(setq view-read-only t)
+
 ;; Improved help
 
 ;; Generally; when I ask for help, I would like it as prompt as possible.
@@ -115,12 +123,11 @@
 ;; feature, but it's not natively implemented in Emacs, so we use a
 ;; package to handle it.
 
-(setq-default delete-by-moving-to-trash t)
-
 (use-package osx-trash
-  :when (eq system-type 'darwin)
   :config
-  (osx-trash-setup))
+  (when (eq system-type 'darwin)
+    (osx-trash-setup))
+  (setq-default delete-by-moving-to-trash t))
 
 
 
@@ -229,7 +236,6 @@
 
 
 (use-package ibuffer-vc
-  :commands (ibuffer-vc)
   :hook (ibuffer . (lambda ()
 		     (ibuffer-vc-set-filter-groups-by-vc-root)
 		     (unless (eq ibuffer-sorting-mode 'alphabetic)
@@ -381,7 +387,6 @@
     (duplicates t)))
 
 (use-package org
-  :commands (org-mode)
   :after (company)
   :ensure-system-package pygmentize
   :config
