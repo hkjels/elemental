@@ -30,6 +30,11 @@ These come bundled with newer versions of Emacs
 (require 'savehist)
 (require 'saveplace)
 (require 'uniquify)
+
+(eval-when-compile
+  (defvar no-littering)
+  (declare-function no-littering-expand-etc-file-name "no-littering-etc")
+  (declare-function no-littering-expand-var-file-name "no-littering-var"))
 #+end_src
 
 ** Lets just agree on UTF-8
@@ -53,6 +58,7 @@ usually are littered all over your ~.emacs.d~ into two directories in
 ~.emacs.d~, ~var~ and ~etc~.
 #+begin_src emacs-lisp :tangle yes :comments org :noweb yes
 (use-package no-littering
+  :demand
   :config
   <<customizations>>
   <<backup>>)
@@ -83,7 +89,7 @@ down the line.
 (setq-default make-backup-files t
 	      backup-by-copying t
 	      backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
-	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)) )
+	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 #+end_src
 
 *** Better reading experience
@@ -113,6 +119,7 @@ however not add any bindings on it's own to make it available. Lets
 fix that!
 #+begin_src emacs-lisp :tangle yes :comments org
 (use-package helpful
+  :demand
   :commands (helpful-callable helpful-variable helpful-key helpful-at-point)
   :bind (([remap describe-function] . helpful-callable)
 	 ([remap describe-variable] . helpful-variable)
@@ -146,8 +153,7 @@ package to handle it.
 
 (use-package osx-trash
   :when (eq system-type 'darwin)
-  :config
-  (osx-trash-setup))
+  :config (osx-trash-setup))
 #+end_src
 
 If the files you're deleting are under version control, you likely
@@ -159,8 +165,8 @@ behalf.
 #+begin_src emacs-lisp :tangle yes :comments org
 (defvar tangling-p nil
   "If you're in the process of tangling an org-file or not.")
-(add-hook 'org-babel-pre-tangle-hook (lambda () (setq tangling? t)))
-(add-hook 'org-babel-post-tangle-hook (lambda () (setq tangling? nil)))
+(add-hook 'org-babel-pre-tangle-hook (lambda () (setq tangling-p t)))
+(add-hook 'org-babel-post-tangle-hook (lambda () (setq tangling-p nil)))
 
 (defun elementary-delete-file-advice (file &optional trash)
   "Prompt the user if she wants to delete the FILE from revision-control or not."

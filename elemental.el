@@ -30,6 +30,11 @@
 (require 'saveplace)
 (require 'uniquify)
 
+(eval-when-compile
+  (defvar no-littering)
+  (declare-function no-littering-expand-etc-file-name "no-littering-etc")
+  (declare-function no-littering-expand-var-file-name "no-littering-var"))
+
 ;; Lets just agree on UTF-8
 
 
@@ -49,13 +54,14 @@
 ;; ~.emacs.d~, ~var~ and ~etc~.
 
 (use-package no-littering
+  :demand
   :config
   (setq-default custom-file (no-littering-expand-etc-file-name "custom.el"))
   (load custom-file :noerror)
   (setq-default make-backup-files t
   	      backup-by-copying t
   	      backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
-  	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)) ))
+  	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 ;; Backup
 
@@ -71,7 +77,7 @@
 (setq-default make-backup-files t
 	      backup-by-copying t
 	      backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
-	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)) )
+	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
 ;; Better reading experience
 
@@ -96,6 +102,7 @@
 ;; fix that!
 
 (use-package helpful
+  :demand
   :commands (helpful-callable helpful-variable helpful-key helpful-at-point)
   :bind (([remap describe-function] . helpful-callable)
 	 ([remap describe-variable] . helpful-variable)
@@ -123,11 +130,11 @@
 ;; feature, but it's not natively implemented in Emacs, so we use a
 ;; package to handle it.
 
+(setq-default delete-by-moving-to-trash t)
+
 (use-package osx-trash
-  :config
-  (when (eq system-type 'darwin)
-    (osx-trash-setup))
-  (setq-default delete-by-moving-to-trash t))
+  :when (eq system-type 'darwin)
+  :config (osx-trash-setup))
 
 
 
@@ -140,8 +147,8 @@
 
 (defvar tangling-p nil
   "If you're in the process of tangling an org-file or not.")
-(add-hook 'org-babel-pre-tangle-hook (lambda () (setq tangling? t)))
-(add-hook 'org-babel-post-tangle-hook (lambda () (setq tangling? nil)))
+(add-hook 'org-babel-pre-tangle-hook (lambda () (setq tangling-p t)))
+(add-hook 'org-babel-post-tangle-hook (lambda () (setq tangling-p nil)))
 
 (defun elementary-delete-file-advice (file &optional trash)
   "Prompt the user if she wants to delete the FILE from revision-control or not."
@@ -236,6 +243,7 @@
 
 
 (use-package ibuffer-vc
+  :commands (ibuffer-vc)
   :hook (ibuffer . (lambda ()
 		     (ibuffer-vc-set-filter-groups-by-vc-root)
 		     (unless (eq ibuffer-sorting-mode 'alphabetic)
@@ -387,6 +395,7 @@
     (duplicates t)))
 
 (use-package org
+  :commands (org-mode)
   :after (company)
   :ensure-system-package pygmentize
   :config
