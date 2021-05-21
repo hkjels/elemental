@@ -47,6 +47,13 @@
 
 (setq-default ring-bell-function 'ignore)
 
+
+
+;; Also, I don't need everything I do to be shouted at me all the time.
+;; You can always open the messages-buffer to see what's going on.
+
+(setq-default inhibit-message t)
+
 ;; Reduce clutter in .emacs.d
 
 ;; So, [[https://github.com/emacscollective/no-littering][no-littering]] is a package that will put files and directories that
@@ -407,15 +414,15 @@
   (setq-default org-html-htmlize-output-type 'css)
   (setq-default org-latex-listings 'minted)
   (setq-default org-latex-minted-options '(("fontsize" "\\scriptsize")
-  					 ("linenos" "")))
+                                           ("linenos" "")))
   (setq-default org-latex-pdf-process '("xelatex -shell-escape -interaction nonstopmode %f"
-  				      "bibtex %b"
-  				      "makeindex %b"
-  				      "xelatex -shell-escape -interaction nonstopmode %f"
-  				      "xelatex -shell-escape -interaction nonstopmode %f"))
-    (setq-default org-pretty-entities t)
-    (setq-default org-pretty-entities-include-sub-superscripts nil)
-    (setq-default org-use-sub-superscripts nil)
+                                        "bibtex %b"
+                                        "makeindex %b"
+                                        "xelatex -shell-escape -interaction nonstopmode %f"
+                                        "xelatex -shell-escape -interaction nonstopmode %f"))
+  (setq-default org-pretty-entities t)
+  (setq-default org-pretty-entities-include-sub-superscripts nil)
+  (setq-default org-use-sub-superscripts nil)
   (setq-default org-adapt-indentation nil)          ;; Disable indentation of content below headlines
   (setq-default org-edit-src-content-indentation 0) ;; Disable indentation of source blocks
   (setq-default org-src-preserve-indentation nil)   ;; Disable indentation for exported source blocks

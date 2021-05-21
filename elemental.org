@@ -51,6 +51,12 @@ to do is invalid. Let's just turn it off.
 (setq-default ring-bell-function 'ignore)
 #+end_src
 
+Also, I don't need everything I do to be shouted at me all the time.
+You can always open the messages-buffer to see what's going on.
+#+begin_src emacs-lisp :tangle yes :comments org
+(setq-default inhibit-message t)
+#+end_src
+
 ** Reduce clutter in .emacs.d
 
 So, [[https://github.com/emacscollective/no-littering][no-littering]] is a package that will put files and directories that
@@ -65,6 +71,7 @@ usually are littered all over your ~.emacs.d~ into two directories in
 #+end_src
 
 *** Customizations
+
 I typically tend to transfer customization's that has stood the test
 of time into my configuration. However, AdHoc adding of
 customization's directly into my init-file will quickly turn ugly. We
