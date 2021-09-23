@@ -66,9 +66,9 @@
   (setq-default custom-file (no-littering-expand-etc-file-name "custom.el"))
   (load custom-file :noerror)
   (setq-default make-backup-files t
-  	      backup-by-copying t
-  	      backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
-  	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+                backup-by-copying t
+                backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
+                auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 ;; Backup
 
@@ -82,9 +82,9 @@
 ;; #+name: backup
 
 (setq-default make-backup-files t
-	      backup-by-copying t
-	      backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
-	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+              backup-by-copying t
+              backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
+              auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
 ;; Better reading experience
 
@@ -112,9 +112,9 @@
   :demand
   :commands (helpful-callable helpful-variable helpful-key helpful-at-point)
   :bind (([remap describe-function] . helpful-callable)
-	 ([remap describe-variable] . helpful-variable)
-	 ([remap describe-key] . helpful-key)
-	 :map emacs-lisp-mode-map
+         ([remap describe-variable] . helpful-variable)
+         ([remap describe-key] . helpful-key)
+         :map emacs-lisp-mode-map
          ("C-c C-d" . helpful-at-point)))
 
 ;; Garbage collection
@@ -127,7 +127,9 @@
 
 (use-package gcmh
   :blackout
-  :config (gcmh-mode t))
+  :config
+  (setq gcmh-idle-delay 0.3)
+  (gcmh-mode t))
 
 ;; Better safe than sorry
 
@@ -160,8 +162,8 @@
 (defun elementary-delete-file-advice (file &optional trash)
   "Prompt the user if she wants to delete the FILE from revision-control or not."
   (if (and (vc-backend file)
-	   (not tangling-p)
-	   (y-or-n-p "Delete from revision system?"))
+           (not tangling-p)
+           (y-or-n-p "Delete from revision system?"))
       (progn (vc-delete-file file) nil)
     t))
 
@@ -175,8 +177,8 @@
 ;; turned on to reflect the reality.
 
 (setq-default auto-revert-verbose nil
-	      global-auto-revert-non-file-buffers t
-	      create-lockfiles nil)
+              global-auto-revert-non-file-buffers t
+              create-lockfiles nil)
 (global-auto-revert-mode t)
 
 
@@ -215,14 +217,14 @@
   :after (no-littering)
   :config
   (setq-default savefile-dir (no-littering-expand-var-file-name "savefile")
-		history-delete-duplicates t
-		savehist-save-minibuffer-history t
-		savehist-autosave-interval nil
-		savehist-additional-variables
-		'(kill-ring
-		  mark-ring global-mark-ring
-		  search-ring regexp-search-ring
-		  shell-command-history))
+                history-delete-duplicates t
+                savehist-save-minibuffer-history t
+                savehist-autosave-interval nil
+                savehist-additional-variables
+                '(kill-ring
+                  mark-ring global-mark-ring
+                  search-ring regexp-search-ring
+		          shell-command-history))
   (savehist-mode t))
 
 ;; Ensure that buffer names are unique
@@ -232,7 +234,7 @@
 ;; their names unique.
 
 (setq-default uniquify-buffer-name-style 'forward
-	      uniquify-separator "/")
+              uniquify-separator "/")
 
 
 
@@ -252,9 +254,9 @@
 (use-package ibuffer-vc
   :commands (ibuffer-vc)
   :hook (ibuffer . (lambda ()
-		     (ibuffer-vc-set-filter-groups-by-vc-root)
-		     (unless (eq ibuffer-sorting-mode 'alphabetic)
-		       (ibuffer-do-sort-by-alphabetic))))
+                     (ibuffer-vc-set-filter-groups-by-vc-root)
+                     (unless (eq ibuffer-sorting-mode 'alphabetic)
+                       (ibuffer-do-sort-by-alphabetic))))
   :bind ([remap list-buffers] . ibuffer))
 
 ;; Streamline the Emacs shell experience
@@ -263,10 +265,10 @@
 ;; for themselves.
 
 (setq-default eshell-scroll-to-bottom-on-input 'all
-	      eshell-kill-on-exit t
-	      eshell-destroy-buffer-when-process-dies t
-	      eshell-hist-ignoredups t
-	      eshell-save-history-on-exit t)
+              eshell-kill-on-exit t
+              eshell-destroy-buffer-when-process-dies t
+              eshell-hist-ignoredups t
+              eshell-save-history-on-exit t)
 
 
 
@@ -288,7 +290,7 @@
 ;; If you ask to copy or delete a directory, ~dired~ should just obey.
 
 (setq-default dired-recursive-copies 'always
-	      dired-recursive-deletes 'top)
+              dired-recursive-deletes 'top)
 
 
 
@@ -322,8 +324,8 @@
   (dired default-directory))
 
 (add-hook 'after-init-hook
-	  (lambda ()
-	    (define-key (current-global-map) [remap dired] #'dired-default-directory)))
+          (lambda ()
+            (define-key (current-global-map) [remap dired] #'dired-default-directory)))
 
 ;; Use only one theme at a time
 
@@ -333,15 +335,15 @@
 ;; loaded, all prior themes should be disabled.
 
 (defadvice load-theme (before theme-dont-propagate activate)
- (progn (mapc #'disable-theme custom-enabled-themes)
-        (run-hooks 'after-load-theme-hook)))
+  (progn (mapc #'disable-theme custom-enabled-themes)
+         (run-hooks 'after-load-theme-hook)))
 
 ;; Correct appearance of the title-bar on MacOS
 
 
 (use-package ns-auto-titlebar
   :when (and (eq system-type 'darwin)
-	     (or (display-graphic-p) (daemonp)))
+             (or (display-graphic-p) (daemonp)))
   :config (ns-auto-titlebar-mode))
 
 ;; Adjust the behavior of the compilation buffer
@@ -350,7 +352,7 @@
 ;; should be self-explanatory.
 
 (setq-default compilation-auto-jump-to-first-error t
-	      compilation-scroll-output t)
+              compilation-scroll-output t)
 
 
 
@@ -413,8 +415,7 @@
   (setq-default org-fontify-quote-and-verse-blocks t)
   (setq-default org-html-htmlize-output-type 'css)
   (setq-default org-latex-listings 'minted)
-  (setq-default org-latex-minted-options '(("fontsize" "\\scriptsize")
-                                           ("linenos" "")))
+  (setq-default org-latex-minted-options '(("fontsize" "\\scriptsize") ("linenos" "")))
   (setq-default org-latex-pdf-process '("xelatex -shell-escape -interaction nonstopmode %f"
                                         "bibtex %b"
                                         "makeindex %b"
@@ -423,15 +424,11 @@
   (setq-default org-pretty-entities t)
   (setq-default org-pretty-entities-include-sub-superscripts nil)
   (setq-default org-use-sub-superscripts nil)
-  (setq-default org-adapt-indentation nil)          ;; Disable indentation of content below headlines
-  (setq-default org-edit-src-content-indentation 0) ;; Disable indentation of source blocks
-  (setq-default org-src-preserve-indentation nil)   ;; Disable indentation for exported source blocks
-  (setq-default org-indent-indentation-per-level 0) ;; Keep everything flush-left
   (setq-default org-latex-logfiles-extensions
-        (quote ("lof" "lot" "tex" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb"
-  	      "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl" "pyg")))
+                (quote ("lof" "lot" "tex" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb"
+                        "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl" "pyg")))
   (setq-default org-use-property-inheritance t)
-  (setq-default org-imenu-depth 5)
+  (setq-default org-imenu-depth 6)
   (setq-default org-src-window-setup 'current-window) ;; Narrow into source-code using the active window
   (setq-default org-confirm-babel-evaluate nil)       ;; It's OK to evaluate when I say so
   (setq-default org-support-shift-select 'always)     ;; Quick action in various contexts
@@ -443,10 +440,12 @@
 
 ;; Bare minimum of languages to support via Babel.
 
-(org-babel-do-load-languages 'org-babel-load-languages '((calc . t)
-							 (emacs-lisp . t)
-							 (makefile . t)
-							 (shell . t)))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((calc . t)
+   (emacs-lisp . t)
+   (makefile . t)
+   (shell . t)))
 (add-to-list 'org-structure-template-alist '("ca" . "src calc"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("ma" . "src makefile"))
@@ -459,10 +458,10 @@
 
 (defun org-insert-structure-template-hook (fn &rest args)
   (progn (previous-line)
-	 (if (not (eq "#+begin_src" (thing-at-point 'line)))
-	     (progn (org-edit-special)
-		    (evil-insert-state))
-	   (next-line))))
+         (if (not (eq "#+begin_src" (thing-at-point 'line)))
+             (progn (org-edit-special)
+                    (evil-insert-state))
+           (next-line))))
 (advice-add 'org-insert-structure-template :after #'org-insert-structure-template-hook)
 
 
@@ -483,8 +482,6 @@
   (push '("#+name:"          . "-") prettify-symbols-alist)
   (push '("#+begin_example"  . "~") prettify-symbols-alist)
   (push '("#+end_example"    . "~") prettify-symbols-alist)
-  (push '("#+begin_quote"    . "") prettify-symbols-alist)
-  (push '("#+end_quote"      . "") prettify-symbols-alist)
   (push '("#+tblfm:"         . "∫") prettify-symbols-alist)
   (push '("[X]"              . (?\[ (Br . Bl) ?✓ (Br . Bl) ?\])) prettify-symbols-alist)
   (push '("\\\\"             . "↩") prettify-symbols-alist)
@@ -497,10 +494,10 @@
 (defun org-split-src-block ()
   (interactive)
   (let* ((el (org-element-context))
-	 (p (point))
-	 (language (org-element-property :language el))
-	 (switches (org-element-property :switches el))
-	 (parameters (org-element-property :parameters el)))
+         (p (point))
+         (language (org-element-property :language el))
+         (switches (org-element-property :switches el))
+         (parameters (org-element-property :parameters el)))
     (beginning-of-line)
     (insert (format "#+end_src\n\n#+begin_src %s %s %s" language (or switches "") (or parameters "")))))
 
@@ -519,7 +516,7 @@
  (org-mode . tangle-after-save)
  (org-mode . (lambda () (blackout 'buffer-face-mode))))
 :bind (:map org-mode-map
-	    ("C-c |" . 'org-split-src-block)))
+            ("C-c |" . 'org-split-src-block)))
 
 ;; Use the file at point
 

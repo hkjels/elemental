@@ -94,9 +94,9 @@ down the line.
 #+name: backup
 #+begin_src emacs-lisp :tangle yes :comments org :noweb yes
 (setq-default make-backup-files t
-	      backup-by-copying t
-	      backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
-	      auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
+              backup-by-copying t
+              backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
+              auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 #+end_src
 
 *** Better reading experience
@@ -129,9 +129,9 @@ fix that!
   :demand
   :commands (helpful-callable helpful-variable helpful-key helpful-at-point)
   :bind (([remap describe-function] . helpful-callable)
-	 ([remap describe-variable] . helpful-variable)
-	 ([remap describe-key] . helpful-key)
-	 :map emacs-lisp-mode-map
+         ([remap describe-variable] . helpful-variable)
+         ([remap describe-key] . helpful-key)
+         :map emacs-lisp-mode-map
          ("C-c C-d" . helpful-at-point)))
 #+end_src
 
@@ -145,7 +145,9 @@ forward.
 #+begin_src emacs-lisp :tangle yes :comments org
 (use-package gcmh
   :blackout
-  :config (gcmh-mode t))
+  :config
+  (setq gcmh-idle-delay 0.3)
+  (gcmh-mode t))
 #+end_src
 
 ** Better safe than sorry
@@ -178,8 +180,8 @@ behalf.
 (defun elementary-delete-file-advice (file &optional trash)
   "Prompt the user if she wants to delete the FILE from revision-control or not."
   (if (and (vc-backend file)
-	   (not tangling-p)
-	   (y-or-n-p "Delete from revision system?"))
+           (not tangling-p)
+           (y-or-n-p "Delete from revision system?"))
       (progn (vc-delete-file file) nil)
     t))
 
@@ -194,8 +196,8 @@ more often than not will lead to confusion I think, so we want it
 turned on to reflect the reality.
 #+begin_src emacs-lisp :tangle yes :comments org
 (setq-default auto-revert-verbose nil
-	      global-auto-revert-non-file-buffers t
-	      create-lockfiles nil)
+              global-auto-revert-non-file-buffers t
+              create-lockfiles nil)
 (global-auto-revert-mode t)
 #+end_src
 
@@ -234,14 +236,14 @@ start with an entirely blank slate on the next session.
   :after (no-littering)
   :config
   (setq-default savefile-dir (no-littering-expand-var-file-name "savefile")
-		history-delete-duplicates t
-		savehist-save-minibuffer-history t
-		savehist-autosave-interval nil
-		savehist-additional-variables
-		'(kill-ring
-		  mark-ring global-mark-ring
-		  search-ring regexp-search-ring
-		  shell-command-history))
+                history-delete-duplicates t
+                savehist-save-minibuffer-history t
+                savehist-autosave-interval nil
+                savehist-additional-variables
+                '(kill-ring
+                  mark-ring global-mark-ring
+                  search-ring regexp-search-ring
+		          shell-command-history))
   (savehist-mode t))
 #+end_src
 
@@ -252,7 +254,7 @@ to distinguish them. Here we set some rules for how Emacs should make
 their names unique.
 #+begin_src emacs-lisp :tangle yes :comments org
 (setq-default uniquify-buffer-name-style 'forward
-	      uniquify-separator "/")
+              uniquify-separator "/")
 #+end_src
 
 After a buffer is killed, we re-rationalize the buffer names.
@@ -271,9 +273,9 @@ But at all times, we leave all "special" buffers as is.
 (use-package ibuffer-vc
   :commands (ibuffer-vc)
   :hook (ibuffer . (lambda ()
-		     (ibuffer-vc-set-filter-groups-by-vc-root)
-		     (unless (eq ibuffer-sorting-mode 'alphabetic)
-		       (ibuffer-do-sort-by-alphabetic))))
+                     (ibuffer-vc-set-filter-groups-by-vc-root)
+                     (unless (eq ibuffer-sorting-mode 'alphabetic)
+                       (ibuffer-do-sort-by-alphabetic))))
   :bind ([remap list-buffers] . ibuffer))
 #+end_src
 
@@ -283,10 +285,10 @@ I believe the names of each of these variables and their value speaks
 for themselves.
 #+begin_src emacs-lisp :tangle yes :comments org
 (setq-default eshell-scroll-to-bottom-on-input 'all
-	      eshell-kill-on-exit t
-	      eshell-destroy-buffer-when-process-dies t
-	      eshell-hist-ignoredups t
-	      eshell-save-history-on-exit t)
+              eshell-kill-on-exit t
+              eshell-destroy-buffer-when-process-dies t
+              eshell-hist-ignoredups t
+              eshell-save-history-on-exit t)
 #+end_src
 
 However, this one does not. ~nil~ here means that the size of the history
@@ -312,7 +314,7 @@ if you so please.
 If you ask to copy or delete a directory, ~dired~ should just obey.
 #+begin_src emacs-lisp :tangle yes :comments org
 (setq-default dired-recursive-copies 'always
-	      dired-recursive-deletes 'top)
+              dired-recursive-deletes 'top)
 #+end_src
 
 When you have two ~dired~ buffers open, it's very likely that you want
@@ -342,8 +344,8 @@ at the position of that file.
   (dired default-directory))
 
 (add-hook 'after-init-hook
-	  (lambda ()
-	    (define-key (current-global-map) [remap dired] #'dired-default-directory)))
+          (lambda ()
+            (define-key (current-global-map) [remap dired] #'dired-default-directory)))
 #+end_src
 
 ** Use only one theme at a time
@@ -354,8 +356,8 @@ things up. With this little advice, we tell Emacs that once a theme is
 loaded, all prior themes should be disabled.
 #+begin_src emacs-lisp :tangle yes :comments org
 (defadvice load-theme (before theme-dont-propagate activate)
- (progn (mapc #'disable-theme custom-enabled-themes)
-        (run-hooks 'after-load-theme-hook)))
+  (progn (mapc #'disable-theme custom-enabled-themes)
+         (run-hooks 'after-load-theme-hook)))
 #+end_src
 
 ** Correct appearance of the title-bar on MacOS
@@ -363,7 +365,7 @@ loaded, all prior themes should be disabled.
 #+begin_src emacs-lisp :tangle yes :comments org
 (use-package ns-auto-titlebar
   :when (and (eq system-type 'darwin)
-	     (or (display-graphic-p) (daemonp)))
+             (or (display-graphic-p) (daemonp)))
   :config (ns-auto-titlebar-mode))
 #+end_src
 
@@ -373,7 +375,7 @@ We customize the compilation-mode slightly. The names and values
 should be self-explanatory.
 #+begin_src emacs-lisp :tangle yes :comments org
 (setq-default compilation-auto-jump-to-first-error t
-	      compilation-scroll-output t)
+              compilation-scroll-output t)
 #+end_src
 
 Then we sprinkle on some color for compilers that use ANSI escape codes
@@ -443,37 +445,26 @@ I've found.
 (setq-default org-fontify-quote-and-verse-blocks t)
 (setq-default org-html-htmlize-output-type 'css)
 (setq-default org-latex-listings 'minted)
-(setq-default org-latex-minted-options '(("fontsize" "\\scriptsize")
-					 ("linenos" "")))
+(setq-default org-latex-minted-options '(("fontsize" "\\scriptsize") ("linenos" "")))
 (setq-default org-latex-pdf-process '("xelatex -shell-escape -interaction nonstopmode %f"
-				      "bibtex %b"
-				      "makeindex %b"
-				      "xelatex -shell-escape -interaction nonstopmode %f"
-				      "xelatex -shell-escape -interaction nonstopmode %f"))
-  (setq-default org-pretty-entities t)
-  (setq-default org-pretty-entities-include-sub-superscripts nil)
-  (setq-default org-use-sub-superscripts nil)
+                                      "bibtex %b"
+                                      "makeindex %b"
+                                      "xelatex -shell-escape -interaction nonstopmode %f"
+                                      "xelatex -shell-escape -interaction nonstopmode %f"))
+(setq-default org-pretty-entities t)
+(setq-default org-pretty-entities-include-sub-superscripts nil)
+(setq-default org-use-sub-superscripts nil)
 #+end_src
 
-AFAIK, there's a heap of issues with indentation in org-mode. I have
-found that turning it all off is the best option.
-#+name: org-config-indentation
-#+begin_src emacs-lisp
-(setq-default org-adapt-indentation nil)          ;; Disable indentation of content below headlines
-(setq-default org-edit-src-content-indentation 0) ;; Disable indentation of source blocks
-(setq-default org-src-preserve-indentation nil)   ;; Disable indentation for exported source blocks
-(setq-default org-indent-indentation-per-level 0) ;; Keep everything flush-left
-#+end_src
-
-When exporting PDF's a lot of temporary files are created to achieve
+When exporting PDF's; a lot of temporary files are created to achieve
 correct typesetting etc. However, once the PDF is ready, you likely
 don't need those. Specifying them as logfiles will make org-mode
 automatically delete them after completing the export.
 #+name: org-config-cleanup
 #+begin_src emacs-lisp
 (setq-default org-latex-logfiles-extensions
-      (quote ("lof" "lot" "tex" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb"
-	      "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl" "pyg")))
+              (quote ("lof" "lot" "tex" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb"
+                      "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl" "pyg")))
 #+end_src
 
 #+begin_src emacs-lisp :tangle yes :comments org :noweb yes
@@ -484,10 +475,9 @@ automatically delete them after completing the export.
   :config
   <<org-config-images>>
   <<org-config-highlight>>
-  <<org-config-indentation>>
   <<org-config-cleanup>>
   (setq-default org-use-property-inheritance t)
-  (setq-default org-imenu-depth 5)
+  (setq-default org-imenu-depth 6)
   (setq-default org-src-window-setup 'current-window) ;; Narrow into source-code using the active window
   (setq-default org-confirm-babel-evaluate nil)       ;; It's OK to evaluate when I say so
   (setq-default org-support-shift-select 'always)     ;; Quick action in various contexts
@@ -498,10 +488,12 @@ automatically delete them after completing the export.
 
 Bare minimum of languages to support via Babel.
 #+begin_src emacs-lisp  :tangle yes :comments org :noweb yes
-(org-babel-do-load-languages 'org-babel-load-languages '((calc . t)
-							 (emacs-lisp . t)
-							 (makefile . t)
-							 (shell . t)))
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((calc . t)
+   (emacs-lisp . t)
+   (makefile . t)
+   (shell . t)))
 (add-to-list 'org-structure-template-alist '("ca" . "src calc"))
 (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
 (add-to-list 'org-structure-template-alist '("ma" . "src makefile"))
@@ -513,10 +505,10 @@ immediately. This hook narrows into the code-block for ya!
 #+begin_src emacs-lisp  :tangle yes :comments org :noweb yes
 (defun org-insert-structure-template-hook (fn &rest args)
   (progn (previous-line)
-	 (if (not (eq "#+begin_src" (thing-at-point 'line)))
-	     (progn (org-edit-special)
-		    (evil-insert-state))
-	   (next-line))))
+         (if (not (eq "#+begin_src" (thing-at-point 'line)))
+             (progn (org-edit-special)
+                    (evil-insert-state))
+           (next-line))))
 (advice-add 'org-insert-structure-template :after #'org-insert-structure-template-hook)
 #+end_src
 
@@ -536,8 +528,6 @@ beautiful symbols for less visual clutter.
   (push '("#+name:"          . "-") prettify-symbols-alist)
   (push '("#+begin_example"  . "~") prettify-symbols-alist)
   (push '("#+end_example"    . "~") prettify-symbols-alist)
-  (push '("#+begin_quote"    . "") prettify-symbols-alist)
-  (push '("#+end_quote"      . "") prettify-symbols-alist)
   (push '("#+tblfm:"         . "∫") prettify-symbols-alist)
   (push '("[X]"              . (?\[ (Br . Bl) ?✓ (Br . Bl) ?\])) prettify-symbols-alist)
   (push '("\\\\"             . "↩") prettify-symbols-alist)
@@ -549,10 +539,10 @@ Quickly split a source-block in two. It's mapped to ~C-c |~
 (defun org-split-src-block ()
   (interactive)
   (let* ((el (org-element-context))
-	 (p (point))
-	 (language (org-element-property :language el))
-	 (switches (org-element-property :switches el))
-	 (parameters (org-element-property :parameters el)))
+         (p (point))
+         (language (org-element-property :language el))
+         (switches (org-element-property :switches el))
+         (parameters (org-element-property :parameters el)))
     (beginning-of-line)
     (insert (format "#+end_src\n\n#+begin_src %s %s %s" language (or switches "") (or parameters "")))))
 #+end_src
@@ -570,7 +560,7 @@ saving the buffer to disk.
  (org-mode . tangle-after-save)
  (org-mode . (lambda () (blackout 'buffer-face-mode))))
 :bind (:map org-mode-map
-	    ("C-c |" . 'org-split-src-block)))
+            ("C-c |" . 'org-split-src-block)))
 #+end_src
 
 ** Use the file at point
