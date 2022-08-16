@@ -47,13 +47,6 @@
 
 (setq-default ring-bell-function 'ignore)
 
-
-
-;; Also, I don't need everything I do to be shouted at me all the time.
-;; You can always open the messages-buffer to see what's going on.
-
-(setq-default inhibit-message t)
-
 ;; Reduce clutter in .emacs.d
 
 ;; So, [[https://github.com/emacscollective/no-littering][no-littering]] is a package that will put files and directories that
@@ -188,6 +181,15 @@
 
 (setq-default auto-revert-use-notify t)
 (setq-default auto-revert-avoid-polling t)
+
+;; Handle viewing compressed files
+
+;; Emacs is quite capable for viewing and editing compressed archives,
+;; but it needs to be enabled. With this, you can go into archives in
+;; dired as if they were directories and do modifications as you please.
+;; The archive will be re-compressed etc automagically.
+
+(auto-compression-mode)
 
 ;; Handle viewing minified files
 
