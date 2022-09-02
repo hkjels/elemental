@@ -85,7 +85,7 @@
 ;; View-mode will give you paging with space and back-space, generally
 ;; more suited for read-only files then the usual scroll behavior.
 
-(setq view-read-only t)
+(setq-default view-read-only t)
 
 ;; Improved help
 
@@ -201,6 +201,12 @@
 (use-package so-long
   :config (global-so-long-mode t))
 
+;; Make scripts executable by default
+
+;; If a script you save starts with [[https://en.wikipedia.org/wiki/Shebang_(Unix)][shebang]], it will be made executable automatically.
+
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+
 ;; Keep more history
 
 ;; As long as you haven't made a conscious jump into a position of a
@@ -228,6 +234,13 @@
                   search-ring regexp-search-ring
 		          shell-command-history))
   (savehist-mode t))
+
+
+
+;; We can also keep track of what files are opened, making it faster to
+;; open recently opened ones with ~M-x recentf-open-files~.
+
+(recentf-mode 1)
 
 ;; Ensure that buffer names are unique
 
@@ -278,6 +291,12 @@
 ;; kept should be equal to ~$HISTSIZE~.
 
 (setq-default eshell-history-size nil)
+
+
+
+;; Show the actual colors instead of escape-sequences.
+
+(add-hook 'eshell-preoutput-filter-functions 'ansi-color-filter-apply)
 
 ;; Ease working with the file system
 
@@ -360,10 +379,15 @@
 
 ;; Then we sprinkle on some color for compilers that use ANSI escape codes
 
+(defun ansi-color-buffer ()
+  "Colorize ANSI escape-codes in the current buffer."
+  (interactive)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+
 (defun colorize-compilation-buffer ()
   (when (eq major-mode 'compilation-mode)
     (let ((inhibit-read-only t))
-      (ansi-color-apply-on-region (point-min) (point-max)))))
+      (ansi-color-buffer))))
 
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
@@ -528,5 +552,36 @@
 ;; is off-course the fallback.
 
 (ffap-bindings)
+
+;; Never break again
+
+;; Here is a nice little trick from [[https://github.com/abo-abo][Oleh Krehel]], where you can test your
+;; configuration of Emacs by spinning up a new instance. Never leave your
+;; configuration broken again.
+
+(defun test-emacs ()
+  "Test if emacs starts correctly."
+  (interactive)
+  (if (eq last-command this-command)
+      (save-buffers-kill-terminal)
+    (require 'async)
+    (async-start
+     (lambda () (shell-command-to-string
+            "emacs --batch --eval \"
+(condition-case e
+    (progn
+      (load \\\"~/.emacs.d/init.el\\\")
+      (message \\\"-OK-\\\"))
+  (error
+   (message \\\"ERROR!\\\")
+   (signal (car e) (cdr e))))\""))
+     `(lambda (output)
+        (if (string-match "-OK-" output)
+            (when ,(called-interactively-p 'any)
+              (message "All is well"))
+          (switch-to-buffer-other-window "*startup error*")
+          (delete-region (point-min) (point-max))
+          (insert output)
+          (search-backward "ERROR!"))))))
 
 (provide 'elemental)

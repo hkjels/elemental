@@ -64,6 +64,28 @@ usually are littered all over your ~.emacs.d~ into two directories in
   <<backup>>)
 #+end_src
 
+** Editing basics
+
+Breaking lines just makes the editing experience confusing.
+#+begin_src emacs-lisp
+(setq-default truncate-lines t)
+#+end_src
+
+Quickly get an overview of s-expressions by placing point on a
+parenthesis.
+#+begin_src emacs-lisp
+(show-paren-mode 1)
+(setq-default show-paren-style 'mixed)
+#+end_src
+
+The default tab-width of eight is too much. We'll use four spaces for
+indentation and tab to trigger completions.
+#+begin_src emacs-lisp
+(setq-default tab-width 4
+              indent-tabs-mode nil
+              tab-always-indent 'complete)
+#+end_src
+
 *** Customizations
 
 I typically tend to transfer customization's that has stood the test
@@ -99,7 +121,7 @@ With this setting, view-mode is enabled for all read-only buffers.
 View-mode will give you paging with space and back-space, generally
 more suited for read-only files then the usual scroll behavior.
 #+begin_src emacs-lisp :tangle yes :comments org :noweb yes
-(setq view-read-only t)
+(setq-default view-read-only t)
 #+end_src
 
 Note: If you want, you can have Emacs delete stale backup's
@@ -223,6 +245,13 @@ hand.
   :config (global-so-long-mode t))
 #+end_src
 
+** Make scripts executable by default
+
+If a script you save starts with [[https://en.wikipedia.org/wiki/Shebang_(Unix)][shebang]], it will be made executable automatically.
+#+begin_src emacs-lisp :tangle yes :comments org
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+#+end_src
+
 ** Keep more history
 
 As long as you haven't made a conscious jump into a position of a
@@ -249,6 +278,12 @@ start with an entirely blank slate on the next session.
                   search-ring regexp-search-ring
 		          shell-command-history))
   (savehist-mode t))
+#+end_src
+
+We can also keep track of what files are opened, making it faster to
+open recently opened ones with ~M-x recentf-open-files~.
+#+begin_src emacs-lisp :tangle yes :comments org
+(recentf-mode 1)
 #+end_src
 
 ** Ensure that buffer names are unique
@@ -299,6 +334,11 @@ However, this one does not. ~nil~ here means that the size of the history
 kept should be equal to ~$HISTSIZE~.
 #+begin_src emacs-lisp :tangle yes :comments org
 (setq-default eshell-history-size nil)
+#+end_src
+
+Show the actual colors instead of escape-sequences.
+#+begin_src emacs-lisp :tangle yes :comments org
+(add-hook 'eshell-preoutput-filter-functions 'ansi-color-filter-apply)
 #+end_src
 
 Note: If you're on MacOS, Emacs GUI will not automatically have access
@@ -384,10 +424,15 @@ should be self-explanatory.
 
 Then we sprinkle on some color for compilers that use ANSI escape codes
 #+begin_src emacs-lisp :tangle yes :comments org
+(defun ansi-color-buffer ()
+  "Colorize ANSI escape-codes in the current buffer."
+  (interactive)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+
 (defun colorize-compilation-buffer ()
   (when (eq major-mode 'compilation-mode)
     (let ((inhibit-read-only t))
-      (ansi-color-apply-on-region (point-min) (point-max)))))
+      (ansi-color-buffer))))
 
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 #+end_src
@@ -575,6 +620,38 @@ more like code-jumps than having to browse manually. Browsing manually
 is off-course the fallback.
 #+begin_src emacs-lisp :tangle yes :comments org
 (ffap-bindings)
+#+end_src
+
+** Never break again
+
+Here is a nice little trick from [[https://github.com/abo-abo][Oleh Krehel]], where you can test your
+configuration of Emacs by spinning up a new instance. Never leave your
+configuration broken again.
+#+begin_src emacs-lisp :tangle yes :comments org
+(defun test-emacs ()
+  "Test if emacs starts correctly."
+  (interactive)
+  (if (eq last-command this-command)
+      (save-buffers-kill-terminal)
+    (require 'async)
+    (async-start
+     (lambda () (shell-command-to-string
+            "emacs --batch --eval \"
+(condition-case e
+    (progn
+      (load \\\"~/.emacs.d/init.el\\\")
+      (message \\\"-OK-\\\"))
+  (error
+   (message \\\"ERROR!\\\")
+   (signal (car e) (cdr e))))\""))
+     `(lambda (output)
+        (if (string-match "-OK-" output)
+            (when ,(called-interactively-p 'any)
+              (message "All is well"))
+          (switch-to-buffer-other-window "*startup error*")
+          (delete-region (point-min) (point-max))
+          (insert output)
+          (search-backward "ERROR!"))))))
 #+end_src
 
 ** And that's Elemental
