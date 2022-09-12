@@ -68,7 +68,7 @@ usually are littered all over your ~.emacs.d~ into two directories in
 
 Breaking lines just makes the editing experience confusing.
 #+begin_src emacs-lisp
-(setq-default truncate-lines t)
+(setq truncate-lines t)
 #+end_src
 
 Quickly get an overview of s-expressions by placing point on a
@@ -250,6 +250,15 @@ hand.
 If a script you save starts with [[https://en.wikipedia.org/wiki/Shebang_(Unix)][shebang]], it will be made executable automatically.
 #+begin_src emacs-lisp :tangle yes :comments org
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+#+end_src
+
+** Just save abbrevs
+
+By default, when you've added some abbrev's, you'll be asked if you
+want to presist them to disk. I've already added them for a reason, so
+I don't need to be bothered with it.
+#+begin_src emacs-lisp :tangle yes :comments org
+(setq-default save-abbrevs 'silently)
 #+end_src
 
 ** Keep more history

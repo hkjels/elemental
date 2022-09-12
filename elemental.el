@@ -207,6 +207,14 @@
 
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
+;; Just save abbrevs
+
+;; By default, when you've added some abbrev's, you'll be asked if you
+;; want to presist them to disk. I've already added them for a reason, so
+;; I don't need to be bothered with it.
+
+(setq-default save-abbrevs 'silently)
+
 ;; Keep more history
 
 ;; As long as you haven't made a conscious jump into a position of a
