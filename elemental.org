@@ -40,7 +40,9 @@ These come bundled with newer versions of Emacs
 ** Lets just agree on UTF-8
 
 #+begin_src emacs-lisp :tangle yes :comments org
-(prefer-coding-system 'utf-8-unix)
+(setq-default default-enable-multibyte-characters t)
+(prefer-coding-system 'utf-8)
+(set-language-environment "UTF-8")
 #+end_src
 
 ** Less nagging
@@ -84,6 +86,7 @@ indentation and tab to trigger completions.
 (setq-default tab-width 4
               indent-tabs-mode nil
               tab-always-indent 'complete)
+(setq indent-tabs-mode nil)
 #+end_src
 
 *** Customizations
@@ -160,6 +163,7 @@ experienced a hickup every now and then, so this might change moving
 forward.
 #+begin_src emacs-lisp :tangle yes :comments org
 (use-package gcmh
+  :disabled
   :blackout
   :config
   (setq gcmh-idle-delay 0.3)
@@ -529,7 +533,7 @@ automatically delete them after completing the export.
 (use-package org
   :commands (org-mode)
   :after (company)
-  :ensure-system-package pygmentize
+  :ensure-system-package (pygmentize . "pip install pygments") 
   :config
   <<org-config-images>>
   <<org-config-highlight>>

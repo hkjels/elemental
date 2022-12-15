@@ -1,6 +1,3 @@
-;; elemental --- intuitive defaults
-
-
 ;; Author: Henrik Kjerringvåg
 ;; Url: https://github.com/hkjels/elemental
 ;; Version: 0.0.1
@@ -15,7 +12,7 @@
 ;; -*- lexical-binding: t; -*-
 ;;; Code:
 
-;; Dependencies
+
 
 ;; These come bundled with newer versions of Emacs
 
@@ -35,19 +32,18 @@
   (declare-function no-littering-expand-etc-file-name "no-littering-etc")
   (declare-function no-littering-expand-var-file-name "no-littering-var"))
 
-;; Lets just agree on UTF-8
+(setq-default default-enable-multibyte-characters t)
+(prefer-coding-system 'utf-8)
+(set-language-environment "UTF-8")
 
 
-(prefer-coding-system 'utf-8-unix)
-
-;; Less nagging
 
 ;; I don't need bells and whistles to know that the movement I'm trying
 ;; to do is invalid. Let's just turn it off.
 
 (setq-default ring-bell-function 'ignore)
 
-;; Reduce clutter in .emacs.d
+
 
 ;; So, [[https://github.com/emacscollective/no-littering][no-littering]] is a package that will put files and directories that
 ;; usually are littered all over your ~.emacs.d~ into two directories in
@@ -63,7 +59,9 @@
                 backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
                 auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
-;; Backup
+
+
+;; *** Backup
 
 ;; Without configuration, Emacs will store backup's of files you're
 ;; editing in the same directory as the file in question. Although, not a
@@ -79,7 +77,7 @@
               backup-directory-alist `(("." . ,(no-littering-expand-var-file-name "backup")))
               auto-save-file-name-transforms `((".*" ,(no-littering-expand-var-file-name "auto-save/") t)))
 
-;; Better reading experience
+
 
 ;; With this setting, view-mode is enabled for all read-only buffers.
 ;; View-mode will give you paging with space and back-space, generally
@@ -87,7 +85,7 @@
 
 (setq-default view-read-only t)
 
-;; Improved help
+
 
 ;; Generally; when I ask for help, I would like it as prompt as possible.
 ;; The setting below allows me to read and browse whatever help I request
@@ -110,7 +108,7 @@
          :map emacs-lisp-mode-map
          ("C-c C-d" . helpful-at-point)))
 
-;; Garbage collection
+
 
 ;; Garbage Collection can make your Emacs instance crawl to a halt. To
 ;; gain maximum performance, we do GC for the most part when Emacs is
@@ -119,12 +117,13 @@
 ;; forward.
 
 (use-package gcmh
+  :disabled
   :blackout
   :config
   (setq gcmh-idle-delay 0.3)
   (gcmh-mode t))
 
-;; Better safe than sorry
+
 
 ;; Most operating systems have a concept of trash. A temporary storage
 ;; for stuff to get rid of. Emacs can use this feature, instead of
@@ -163,7 +162,7 @@
 (advice-add 'delete-file :before-while #'elementary-delete-file-advice)
 (advice-add 'dired-delete-file :before-while (lambda (file &optional recursive trash) (elementary-delete-file-advice file)))
 
-;; Use changes from the file-system
+
 
 ;; In Emacs, this is called ~autorevert~ and is turned off by default. This
 ;; more often than not will lead to confusion I think, so we want it
@@ -182,7 +181,7 @@
 (setq-default auto-revert-use-notify t)
 (setq-default auto-revert-avoid-polling t)
 
-;; Handle viewing compressed files
+
 
 ;; Emacs is quite capable for viewing and editing compressed archives,
 ;; but it needs to be enabled. With this, you can go into archives in
@@ -191,7 +190,7 @@
 
 (auto-compression-mode)
 
-;; Handle viewing minified files
+
 
 ;; So long remedies performance issues with files that have very long
 ;; lines. One of the remedies is making the buffer read-only, but these
@@ -201,13 +200,13 @@
 (use-package so-long
   :config (global-so-long-mode t))
 
-;; Make scripts executable by default
+
 
 ;; If a script you save starts with [[https://en.wikipedia.org/wiki/Shebang_(Unix)][shebang]], it will be made executable automatically.
 
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
 
-;; Just save abbrevs
+
 
 ;; By default, when you've added some abbrev's, you'll be asked if you
 ;; want to presist them to disk. I've already added them for a reason, so
@@ -215,7 +214,7 @@
 
 (setq-default save-abbrevs 'silently)
 
-;; Keep more history
+
 
 ;; As long as you haven't made a conscious jump into a position of a
 ;; file, I think it's a good idea to start at the position you were last
@@ -250,7 +249,7 @@
 
 (recentf-mode 1)
 
-;; Ensure that buffer names are unique
+
 
 ;; Having two different buffers with the same name makes it alot harder
 ;; to distinguish them. Here we set some rules for how Emacs should make
@@ -271,9 +270,6 @@
 
 (setq-default uniquify-ignore-buffers-re "^\\*")
 
-;; Group buffers for better context
-
-
 (use-package ibuffer-vc
   :commands (ibuffer-vc)
   :hook (ibuffer . (lambda ()
@@ -282,7 +278,7 @@
                        (ibuffer-do-sort-by-alphabetic))))
   :bind ([remap list-buffers] . ibuffer))
 
-;; Streamline the Emacs shell experience
+
 
 ;; I believe the names of each of these variables and their value speaks
 ;; for themselves.
@@ -306,7 +302,7 @@
 
 (add-hook 'eshell-preoutput-filter-functions 'ansi-color-filter-apply)
 
-;; Ease working with the file system
+
 
 ;; Reuse ~dired~ buffers if the directory is a sub directory of an already
 ;; open directory. You can still spawn a new buffer of the same directory
@@ -356,7 +352,7 @@
           (lambda ()
             (define-key (current-global-map) [remap dired] #'dired-default-directory)))
 
-;; Use only one theme at a time
+
 
 ;; The default behavior of Emacs is that you can compose multiple themes;
 ;; however, in practice that's never done and will likely just mess
@@ -367,15 +363,12 @@
   (progn (mapc #'disable-theme custom-enabled-themes)
          (run-hooks 'after-load-theme-hook)))
 
-;; Correct appearance of the title-bar on MacOS
-
-
 (use-package ns-auto-titlebar
   :when (and (eq system-type 'darwin)
              (or (display-graphic-p) (daemonp)))
   :config (ns-auto-titlebar-mode))
 
-;; Adjust the behavior of the compilation buffer
+
 
 ;; We customize the compilation-mode slightly. The names and values
 ;; should be self-explanatory.
@@ -399,7 +392,7 @@
 
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
-;; A better starting-point for Org-mode
+
 
 ;; This little snippet allows you to toggle a narrowed state. It's not
 ;; specific to org-mode, but it works with source-blocks or subtree's if
@@ -440,7 +433,7 @@
 (use-package org
   :commands (org-mode)
   :after (company)
-  :ensure-system-package pygmentize
+  :ensure-system-package (pygmentize . "pip install pygments") 
   :config
   (setq-default org-display-inline-images t)
   (setq-default org-startup-with-inline-images t)
@@ -552,7 +545,7 @@
 :bind (:map org-mode-map
             ("C-c |" . 'org-split-src-block)))
 
-;; Use the file at point
+
 
 ;; When opening files etc, we can start with a populated field if our
 ;; point is on a filename. This will work with most buffers and feels
@@ -561,7 +554,7 @@
 
 (ffap-bindings)
 
-;; Never break again
+
 
 ;; Here is a nice little trick from [[https://github.com/abo-abo][Oleh Krehel]], where you can test your
 ;; configuration of Emacs by spinning up a new instance. Never leave your
