@@ -1,6 +1,7 @@
 ;; Author: Henrik Kjerringvåg
 ;; Url: https://github.com/hkjels/elemental
 ;; Version: 0.0.1
+;; Package-Requires:((emacs "25.1") (no-littering) (helpful "0.20") (gcmh "0.2.1") (ibuffer-vc) (osx-trash "0.2.2") (ns-auto-titlebar))
 ;;; Commentary:
 ;; Elemental changes a lot of default configurations of Emacs to
 ;; be more intuitive and to improve performance.
@@ -117,7 +118,6 @@
 ;; forward.
 
 (use-package gcmh
-  :disabled
   :blackout
   :config
   (setq gcmh-idle-delay 0.3)
@@ -192,16 +192,6 @@
 
 
 
-;; So long remedies performance issues with files that have very long
-;; lines. One of the remedies is making the buffer read-only, but these
-;; are usually minified files anyways and should not be dealt with by
-;; hand.
-
-(use-package so-long
-  :config (global-so-long-mode t))
-
-
-
 ;; If a script you save starts with [[https://en.wikipedia.org/wiki/Shebang_(Unix)][shebang]], it will be made executable automatically.
 
 (add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
@@ -228,7 +218,7 @@
 ;; start with an entirely blank slate on the next session.
 
 (use-package savehist
-  :straight nil
+  :straight (:type built-in)
   :after (no-littering)
   :config
   (setq-default savefile-dir (no-littering-expand-var-file-name "savefile")
@@ -410,29 +400,7 @@
                (t (org-narrow-to-subtree))))
         (t (error "Please select a region to narrow to"))))
 
-
-
-;; Org-mode keywords have no company-backend by default, so we need to
-;; supply one. I grabbed it from this [[https://emacs.stackexchange.com/questions/21171/company-mode-completion-for-org-keywords#answer-30691][StackExchange]] and changed the
-;; candidates to lower-case.
-
-(defun org-keyword-backend (command &optional arg &rest ignored)
-  (interactive (list 'interactive))
-  (cl-case command
-    (interactive (company-begin-backend 'org-keyword-backend))
-    (prefix (and (eq major-mode 'org-mode)
-                 (cons (company-grab-line "^#\\+\\(\\w*\\)" 1)
-                       t)))
-    (candidates (mapcar #'downcase
-                        (cl-remove-if-not
-                         (lambda (c) (string-prefix-p arg c))
-                         (pcomplete-completions))))
-    (ignore-case t)
-    (duplicates t)))
-
 (use-package org
-  :commands (org-mode)
-  :after (company)
   :ensure-system-package (pygmentize . "pip install pygments") 
   :config
   (setq-default org-display-inline-images t)
@@ -535,7 +503,6 @@
 
 (defun tangle-after-save ()
   (add-hook 'after-save-hook 'org-babel-tangle nil 'local))
-(add-to-list 'company-backends #'org-keyword-backend)
 :hook
 ((org-mode . org-pretty-symbols-mode)
  (org-mode . auto-fill-mode)
